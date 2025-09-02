@@ -63,3 +63,5 @@ module.exports = {
 完成上述“项目配置”步骤。
 启动服务: npm start
 (生产环境) 使用 PM2 持久化运行: pm2 start npm --name "health-hub-backend" -- start
+
+[![Use EdgeOne Pages to deploy](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/pandax-i/healthhub)
