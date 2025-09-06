@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 
 // --- 状态 ---
-const API_BASE_URL = 'http://129.204.252.237:3000/api'
+const API_BASE_URL = 'https://api.joru.email/api'
 const toast = ref({ show: false, message: '', isSuccess: true })
 
 // 日历状态

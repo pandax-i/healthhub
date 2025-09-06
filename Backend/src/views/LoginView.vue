@@ -8,7 +8,7 @@ const router = useRouter()
 const isLogin = ref(true)
 const authForm = ref({ email: '', password: '' })
 const authError = ref('')
-const API_BASE_URL = 'http://129.204.252.237:3000/api' // 您的后端API地址
+const API_BASE_URL = 'https://api.joru.email/api' // 您的后端API地址
 
 // --- 方法 ---
 const apiRequest = async (endpoint, method = 'GET', body = null) => {

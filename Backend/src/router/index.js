@@ -38,6 +38,12 @@ const router = createRouter({
       component: () => import('../views/FinanceView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/pomodoro',
+      name: 'pomodoro',
+      component: () => import('../views/PomodoroView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

@@ -50,6 +50,15 @@
         <h3 class="font-semibold text-gray-800">备忘录</h3>
       </a>
       <a
+        href="#/pomodoro"
+        class="feature-card bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center border border-white/20"
+      >
+        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-3">
+          <i data-lucide="timer" class="text-orange-600"></i>
+        </div>
+        <h3 class="font-semibold text-gray-800">番茄钟</h3>
+      </a>
+      <a
         href="#/finance"
         class="feature-card bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center col-span-2 md:col-span-4 border border-white/20"
       >

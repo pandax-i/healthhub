@@ -77,6 +77,11 @@ router.afterEach(() => {
         class="nav-link flex flex-col items-center text-gray-500 hover:text-blue-600"
         ><i data-lucide="dollar-sign"></i><span class="text-xs mt-1">记账</span></RouterLink
       >
+      <RouterLink
+        to="/pomodoro"
+        class="nav-link flex flex-col items-center text-gray-500 hover:text-blue-600"
+        ><i data-lucide="timer"></i><span class="text-xs mt-1">番茄钟</span></RouterLink
+      >
       <button @click="logout" class="flex flex-col items-center text-gray-500 hover:text-red-600">
         <i data-lucide="log-out"></i><span class="text-xs mt-1">登出</span>
       </button>
