@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>番茄钟</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .timer-circle-progress {
+        transition: stroke-dashoffset 1s linear;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen antialiased">
+    <div class="w-full max-w-md mx-auto p-6 md:p-8 relative">
+      <div class="absolute top-4 right-4 md:top-6 md:right-6">
+        <button
+          id="settings-btn"
+          class="text-gray-500 hover:text-white transition-colors duration-200"
+          title="设置"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-100">番茄钟</h1>
+        <p id="session-status" class="text-lg text-teal-400 mt-2">专注时间！</p>
+      </div>
+
+      <!-- Timer Display -->
+      <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-8">
+        <svg class="w-full h-full" viewBox="0 0 100 100">
+          <!-- Background circle -->
+          <circle
+            class="text-gray-700 stroke-current"
+            stroke-width="4"
+            cx="50"
+            cy="50"
+            r="45"
+            fill="transparent"
+          ></circle>
+          <!-- Progress circle -->
+          <circle
+            id="timer-progress"
+            class="text-teal-500 stroke-current timer-circle-progress"
+            stroke-width="4"
+            cx="50"
+            cy="50"
+            r="45"
+            fill="transparent"
+            stroke-linecap="round"
+            transform="rotate(-90 50 50)"
+            style="stroke-dasharray: 282.74; stroke-dashoffset: 282.74"
+          ></circle>
+        </svg>
+        <div
+          id="timer-display"
+          class="absolute inset-0 flex items-center justify-center text-5xl sm:text-6xl font-bold tracking-wider"
+        >
+          25:00
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex justify-center items-center space-x-4">
+        <button
+          id="start-pause-btn"
+          class="w-32 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg transform hover:scale-105"
+        >
+          开始
+        </button>
+        <button
+          id="reset-btn"
+          class="w-32 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg transform hover:scale-105"
+        >
+          重置
+        </button>
+      </div>
+
+      <!-- Pomodoro Counter -->
+      <div class="mt-8 text-center">
+        <p class="text-gray-400">已完成的番茄钟</p>
+        <div id="pomodoro-counter" class="flex justify-center space-x-2 mt-2">
+          <!-- Counter dots will be inserted here -->
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <div class="mt-8 text-left max-w-sm mx-auto">
+        <h3 class="text-lg font-semibold text-gray-300 mb-2 text-center">任务列表</h3>
+        <div class="flex space-x-2 mb-4">
+          <input
+            type="text"
+            id="task-input"
+            class="flex-grow bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            placeholder="添加新任务..."
+          />
+          <button
+            id="add-task-btn"
+            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+          >
+            添加
+          </button>
+        </div>
+        <ul id="task-list" class="space-y-2 max-h-40 overflow-y-auto">
+          <!-- Task items will be inserted here -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div
+      id="settings-modal"
+      class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4"
+    >
+      <div class="bg-gray-800 rounded-lg p-6 md:p-8 w-full max-w-sm shadow-2xl">
+        <h2 class="text-2xl font-bold mb-6 text-center text-white">时间设置</h2>
+        <div class="space-y-4">
+          <div>
+            <label for="pomodoro-duration" class="block text-sm font-medium text-gray-300"
+              >专注 (分钟)</label
+            >
+            <input
+              type="number"
+              id="pomodoro-duration"
+              class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              min="1"
+            />
+          </div>
+          <div>
+            <label for="short-break-duration" class="block text-sm font-medium text-gray-300"
+              >短休息 (分钟)</label
+            >
+            <input
+              type="number"
+              id="short-break-duration"
+              class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              min="1"
+            />
+          </div>
+          <div>
+            <label for="long-break-duration" class="block text-sm font-medium text-gray-300"
+              >长休息 (分钟)</label
+            >
+            <input
+              type="number"
+              id="long-break-duration"
+              class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              min="1"
+            />
+          </div>
+        </div>
+        <div class="mt-8 flex justify-end space-x-3">
+          <button
+            id="close-modal-btn"
+            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-md transition-colors duration-200"
+          >
+            取消
+          </button>
+          <button
+            id="save-settings-btn"
+            class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-md transition-colors duration-200"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const timerDisplay = document.getElementById('timer-display')
+      const sessionStatus = document.getElementById('session-status')
+      const startPauseBtn = document.getElementById('start-pause-btn')
+      const resetBtn = document.getElementById('reset-btn')
+      const pomodoroCounter = document.getElementById('pomodoro-counter')
+      const timerProgress = document.getElementById('timer-progress')
+      const settingsBtn = document.getElementById('settings-btn')
+      const settingsModal = document.getElementById('settings-modal')
+      const closeModalBtn = document.getElementById('close-modal-btn')
+      const saveSettingsBtn = document.getElementById('save-settings-btn')
+      const pomodoroInput = document.getElementById('pomodoro-duration')
+      const shortBreakInput = document.getElementById('short-break-duration')
+      const longBreakInput = document.getElementById('long-break-duration')
+      const taskInput = document.getElementById('task-input')
+      const addTaskBtn = document.getElementById('add-task-btn')
+      const taskList = document.getElementById('task-list')
+
+      // Timer Constants
+      let SESSIONS = {
+        POMODORO: 25,
+        SHORT_BREAK: 5,
+        LONG_BREAK: 15,
+      }
+      const SESSION_TITLES = {
+        POMODORO: '专注',
+        SHORT_BREAK: '短休息',
+        LONG_BREAK: '长休息',
+      }
+      const POMODOROS_UNTIL_LONG_BREAK = 4
+      const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * 45 // 2 * PI * radius
+
+      // App State
+      let timerId = null
+      let timeRemaining = SESSIONS.POMODORO * 60
+      let currentSession = 'POMODORO'
+      let pomodorosCompleted = 0
+      let isRunning = false
+      let tasks = []
+      let activeTaskId = null
+
+      // --- Core Timer Functions ---
+
+      function updateDisplay() {
+        const minutes = Math.floor(timeRemaining / 60)
+          .toString()
+          .padStart(2, '0')
+        const seconds = (timeRemaining % 60).toString().padStart(2, '0')
+        timerDisplay.textContent = `${minutes}:${seconds}`
+        document.title = `${minutes}:${seconds} - ${SESSION_TITLES[currentSession]}`
+
+        const totalDuration = SESSIONS[currentSession] * 60
+        const progress = (totalDuration - timeRemaining) / totalDuration
+        const offset = CIRCLE_CIRCUMFERENCE * (1 - progress)
+        timerProgress.style.strokeDashoffset = offset
+      }
+
+      function playSound() {
+        try {
+          const synth = new Tone.Synth().toDestination()
+          synth.triggerAttackRelease('C5', '8n', Tone.now())
+          synth.triggerAttackRelease('G5', '8n', Tone.now() + 0.2)
+        } catch (e) {
+          console.error('Audio could not be played.', e)
+        }
+      }
+
+      function switchSession() {
+        if (currentSession === 'POMODORO') {
+          pomodorosCompleted++
+          updatePomodoroCounter()
+          if (pomodorosCompleted % POMODOROS_UNTIL_LONG_BREAK === 0) {
+            setSession('LONG_BREAK')
+          } else {
+            setSession('SHORT_BREAK')
+          }
+        } else {
+          setSession('POMODORO')
+        }
+        playSound()
+        startTimer()
+      }
+
+      function setSession(sessionType) {
+        currentSession = sessionType
+        timeRemaining = SESSIONS[sessionType] * 60
+
+        const activeTask = tasks.find((task) => task.id === activeTaskId)
+        switch (sessionType) {
+          case 'POMODORO':
+            sessionStatus.textContent =
+              activeTask && !activeTask.completed ? `专注: ${activeTask.text}` : '专注时间！'
+            timerProgress.classList.remove('text-green-500', 'text-blue-500')
+            timerProgress.classList.add('text-teal-500')
+            break
+          case 'SHORT_BREAK':
+            sessionStatus.textContent = '短暂休息一下！'
+            timerProgress.classList.remove('text-teal-500', 'text-blue-500')
+            timerProgress.classList.add('text-green-500')
+            break
+          case 'LONG_BREAK':
+            sessionStatus.textContent = '该长时间休息了！'
+            timerProgress.classList.remove('text-teal-500', 'text-green-500')
+            timerProgress.classList.add('text-blue-500')
+            break
+        }
+        updateDisplay()
+      }
+
+      function timerTick() {
+        if (timeRemaining > 0) {
+          timeRemaining--
+          updateDisplay()
+        } else {
+          clearInterval(timerId)
+          isRunning = false
+          switchSession()
+        }
+      }
+
+      // --- Control Functions ---
+
+      function startTimer() {
+        if (!isRunning) {
+          isRunning = true
+          startPauseBtn.textContent = '暂停'
+          timerId = setInterval(timerTick, 1000)
+        }
+      }
+
+      function pauseTimer() {
+        if (isRunning) {
+          isRunning = false
+          startPauseBtn.textContent = '开始'
+          clearInterval(timerId)
+        }
+      }
+
+      function handleStartPause() {
+        if (isRunning) {
+          pauseTimer()
+        } else {
+          startTimer()
+        }
+      }
+
+      function resetTimer() {
+        pauseTimer()
+        setSession('POMODORO')
+      }
+
+      // --- UI Update Functions ---
+
+      function updatePomodoroCounter() {
+        pomodoroCounter.innerHTML = ''
+        const completedInCycle = pomodorosCompleted % POMODOROS_UNTIL_LONG_BREAK
+        const dotsToShow =
+          completedInCycle === 0 && pomodorosCompleted > 0
+            ? POMODOROS_UNTIL_LONG_BREAK
+            : completedInCycle
+
+        for (let i = 0; i < POMODOROS_UNTIL_LONG_BREAK; i++) {
+          const dot = document.createElement('div')
+          dot.className = 'w-4 h-4 rounded-full'
+          dot.classList.add(i < dotsToShow ? 'bg-teal-500' : 'bg-gray-700')
+          if (
+            pomodorosCompleted > 0 &&
+            pomodorosCompleted % POMODOROS_UNTIL_LONG_BREAK === 0 &&
+            i < dotsToShow
+          ) {
+            dot.classList.remove('bg-teal-500')
+            dot.classList.add('bg-blue-500')
+          }
+          pomodoroCounter.appendChild(dot)
+        }
+        if (pomodorosCompleted > 0 && pomodorosCompleted % POMODOROS_UNTIL_LONG_BREAK === 0) {
+          setTimeout(() => {
+            if (currentSession !== 'LONG_BREAK') updatePomodoroCounterVisuals(0)
+          }, 1000)
+        }
+      }
+
+      function updatePomodoroCounterVisuals(completedCount) {
+        pomodoroCounter.innerHTML = ''
+        for (let i = 0; i < POMODOROS_UNTIL_LONG_BREAK; i++) {
+          const dot = document.createElement('div')
+          dot.className = 'w-4 h-4 rounded-full'
+          dot.classList.add(i < completedCount ? 'bg-teal-500' : 'bg-gray-700')
+          pomodoroCounter.appendChild(dot)
+        }
+      }
+
+      // --- Task List Functions ---
+
+      function saveTasks() {
+        localStorage.setItem('pomodoro_tasks', JSON.stringify(tasks))
+        localStorage.setItem('pomodoro_activeTaskId', activeTaskId)
+      }
+
+      function loadTasks() {
+        const storedTasks = localStorage.getItem('pomodoro_tasks')
+        const storedActiveTaskId = localStorage.getItem('pomodoro_activeTaskId')
+        tasks = storedTasks ? JSON.parse(storedTasks) : []
+        activeTaskId = storedActiveTaskId ? storedActiveTaskId : null
+        renderTasks()
+      }
+
+      function renderTasks() {
+        taskList.innerHTML = ''
+        if (tasks.length === 0) {
+          taskList.innerHTML = `<li class="text-center text-gray-500 p-3">还没有任务</li>`
+          return
+        }
+
+        tasks.forEach((task) => {
+          const li = document.createElement('li')
+          li.className = `flex items-center justify-between p-3 rounded-md transition-colors duration-200 cursor-pointer ${task.id === activeTaskId ? 'bg-gray-700' : 'bg-gray-800 hover:bg-gray-700'}`
+          li.dataset.id = task.id
+
+          const taskContent = `
+                    <div class="flex items-center overflow-hidden">
+                        <input type="checkbox" class="task-checkbox h-5 w-5 rounded bg-gray-600 border-gray-500 text-teal-500 focus:ring-teal-500 cursor-pointer flex-shrink-0" ${task.completed ? 'checked' : ''}>
+                        <span class="ml-3 truncate ${task.completed ? 'line-through text-gray-500' : 'text-gray-200'}" title="${task.text}">${task.text}</span>
+                    </div>
+                    <button class="delete-task-btn text-gray-500 hover:text-red-500 transition-colors duration-200 ml-2 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                `
+          li.innerHTML = taskContent
+          taskList.appendChild(li)
+        })
+
+        if (currentSession === 'POMODORO') {
+          const activeTask = tasks.find((task) => task.id === activeTaskId)
+          sessionStatus.textContent =
+            activeTask && !activeTask.completed ? `专注: ${activeTask.text}` : '专注时间！'
+        }
+      }
+
+      function addTask() {
+        const text = taskInput.value.trim()
+        if (text) {
+          const newTask = { id: Date.now().toString(), text, completed: false }
+          tasks.push(newTask)
+          taskInput.value = ''
+          saveTasks()
+          renderTasks()
+        }
+      }
+
+      function handleTaskListClick(e) {
+        const parentLi = e.target.closest('li')
+        if (!parentLi) return
+        const taskId = parentLi.dataset.id
+        if (e.target.classList.contains('task-checkbox')) {
+          toggleTask(taskId)
+        } else if (e.target.closest('.delete-task-btn')) {
+          deleteTask(taskId)
+        } else {
+          setActiveTask(taskId)
+        }
+      }
+
+      function toggleTask(id) {
+        tasks = tasks.map((task) =>
+          task.id === id ? { ...task, completed: !task.completed } : task,
+        )
+        saveTasks()
+        renderTasks()
+      }
+
+      function deleteTask(id) {
+        tasks = tasks.filter((task) => task.id !== id)
+        if (activeTaskId === id) {
+          activeTaskId = null
+        }
+        saveTasks()
+        renderTasks()
+      }
+
+      function setActiveTask(id) {
+        activeTaskId = id
+        saveTasks()
+        renderTasks()
+      }
+
+      // --- Settings Modal Functions ---
+
+      function openModal() {
+        pomodoroInput.value = SESSIONS.POMODORO
+        shortBreakInput.value = SESSIONS.SHORT_BREAK
+        longBreakInput.value = SESSIONS.LONG_BREAK
+        settingsModal.classList.remove('hidden')
+      }
+
+      function closeModal() {
+        settingsModal.classList.add('hidden')
+      }
+
+      function saveSettings() {
+        const newPomodoro = parseInt(pomodoroInput.value)
+        const newShortBreak = parseInt(shortBreakInput.value)
+        const newLongBreak = parseInt(longBreakInput.value)
+
+        if (newPomodoro > 0 && newShortBreak > 0 && newLongBreak > 0) {
+          SESSIONS.POMODORO = newPomodoro
+          SESSIONS.SHORT_BREAK = newShortBreak
+          SESSIONS.LONG_BREAK = newLongBreak
+
+          pauseTimer()
+          pomodorosCompleted = 0
+          updatePomodoroCounterVisuals(0)
+          setSession('POMODORO')
+
+          closeModal()
+        } else {
+          console.error('Please enter valid minute values greater than 0.')
+        }
+      }
+
+      // --- Event Listeners ---
+      startPauseBtn.addEventListener('click', handleStartPause)
+      resetBtn.addEventListener('click', resetTimer)
+      settingsBtn.addEventListener('click', openModal)
+      closeModalBtn.addEventListener('click', closeModal)
+      saveSettingsBtn.addEventListener('click', saveSettings)
+      addTaskBtn.addEventListener('click', addTask)
+      taskInput.addEventListener('keypress', (e) => e.key === 'Enter' && addTask())
+      taskList.addEventListener('click', handleTaskListClick)
+
+      // --- Initial Load ---
+      window.onload = () => {
+        loadTasks()
+        updateDisplay()
+        updatePomodoroCounterVisuals(0)
+        timerProgress.style.strokeDasharray = CIRCLE_CIRCUMFERENCE
+        timerProgress.style.strokeDashoffset = CIRCLE_CIRCUMFERENCE
+      }
+    </script>
+  </body>
+</html>

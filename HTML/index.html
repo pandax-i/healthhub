@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>健康生活管理平台 (Vue版)</title>
+
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide-react@0.292.0/dist/umd/lucide.min.js"></script>
+    <script type="module" crossorigin src="/assets/index-CMunT34Q.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-9D1StowS.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- 【新增】动态背景壁纸脚本 -->
+    <script>
+      ;(() => {
+        const desktopBgUrl = 'https://bing.img.run/uhd.php'
+        const mobileBgUrl = 'https://bing.img.run/m.php'
+
+        // 根据屏幕宽度判断使用哪个壁纸接口
+        const isMobile = window.innerWidth < 768
+        const finalBgUrl = isMobile ? mobileBgUrl : desktopBgUrl
+
+        // 设置body的背景样式
+        document.body.style.backgroundImage = `url(${finalBgUrl})`
+        document.body.style.backgroundSize = 'cover'
+        document.body.style.backgroundPosition = 'center'
+        document.body.style.backgroundAttachment = 'fixed' // 背景图固定，内容滚动
+      })()
+    </script>
+
+  </body>
+</html>
